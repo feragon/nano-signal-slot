@@ -141,7 +141,7 @@ class Signal<RT(Args...)> : private Observer
     #endif
 
     template <typename... Uref>
-    void emit(Uref&&... args)
+    void operator() (Uref&&... args)
     {
         Observer::onEach<Delegate>(std::forward<Uref>(args)...);
     }
