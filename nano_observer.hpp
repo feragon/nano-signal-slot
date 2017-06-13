@@ -12,13 +12,28 @@ class Observer
     template <typename T> friend class Signal;
 
     struct DelegateKeyObserver { DelegateKey delegate; Observer* observer; };
-    struct Node { DelegateKeyObserver data; Node* next; } *head = nullptr;
+    struct Node {
+        DelegateKeyObserver data;
+        struct Node* next;
+    };
+
+    Node* head = nullptr;
+    Node* last = nullptr;
 
     //-----------------------------------------------------------PRIVATE METHODS
 
     void insert(DelegateKey const& key, Observer* obs)
     {
-        head = new Node { { key, obs }, head };
+        Node* newNode = new Node{{key, obs}, nullptr};
+
+        if(last) {
+            last->next = newNode;
+        }
+        else {
+            head = newNode;
+        }
+
+        last = newNode;
     }
 
     void remove(DelegateKey const& key, Observer* obs)
@@ -38,6 +53,11 @@ class Observer
                 {
                     head = head->next;
                 }
+
+                if(node == last) {
+                    last = prev;
+                }
+
                 delete node;
                 break;
             }
@@ -59,6 +79,7 @@ class Observer
             delete temp;
         }
         head = nullptr;
+        last = nullptr;
     }
 
     bool isEmpty() const
